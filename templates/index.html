@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR 文件上传</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 上传区域样式 */
+        .upload-box {
+            margin-bottom: 20px;
+        }
+
+        .upload-box label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .upload-box input[type="file"] {
+            width: 96%;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            background: #f9f9f9;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-box input[type="file"]:hover {
+            border-color: #007bff;
+        }
+
+        .upload-box button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .upload-box button:hover {
+            background: #0056b3;
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-spinner p {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        /* 结果区域样式 */
+        .result-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .result-box h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #result {
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            font-size: 14px;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>OCR 识别</h1>
+        <div class="upload-box">
+            <form id="uploadForm">
+                <label for="fileInput">选择图片文件</label>
+                <input type="file" name="file" id="fileInput" accept="image/*">
+                <button type="submit">上传并识别</button>
+            </form>
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p>正在处理，请稍候...</p>
+            </div>
+        </div>
+        <div class="result-box">
+            <h2>OCR 结果：</h2>
+            <pre id="result">等待上传文件...</pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();  // 阻止表单默认提交行为
+
+            const fileInput = document.getElementById('fileInput');
+            const resultElement = document.getElementById('result');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            if (fileInput.files.length === 0) {
+                alert('请选择一个文件');
+                return;
+            }
+
+            // 显示加载动画
+            loadingSpinner.style.display = 'block';
+            resultElement.textContent = '正在处理，请稍候...';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    resultElement.textContent = JSON.stringify(data, null, 2);  // 格式化显示 JSON 结果
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultElement.textContent = 'OCR 处理失败，请检查控制台日志。';
+                })
+                .finally(() => {
+                    // 隐藏加载动画
+                    loadingSpinner.style.display = 'none';
+                });
+        });
+    </script>
+</body>
+
+</html>

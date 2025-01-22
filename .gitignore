@@ -1,0 +1,30 @@
+# Python 文件
+__pycache__/
+*.py[cod]
+*.pyo
+.venv
+
+# Flask 上传的文件
+uploads/
+
+# 其他常见的忽略项
+*.log
+*.sqlite3
+*.db
+
+# IDE 和编辑器配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 其他忽略项
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.tif
